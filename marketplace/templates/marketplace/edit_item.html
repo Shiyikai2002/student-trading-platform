@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    body {
+        background: url("https://www.instamojo.com/blog/wp-content/uploads/2022/03/ecommerce.jpg") no-repeat center center fixed;
+        background-size: cover;
+    }
+    .edit-container {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 600px;
+        margin: 50px auto;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .btn-update {
+        width: 100%;
+        font-size: 18px;
+        padding: 10px;
+    }
+</style>
+
+<div class="container">
+    <div class="edit-container">
+        <h2>Edit Item</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Name:</label>
+                {{ form.name }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Description:</label>
+                {{ form.description }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Category:</label>
+                {{ form.category }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Price:</label>
+                {{ form.price }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Image:</label>
+                {% if item.image %}
+                    <p>Current Image: <a href="{{ item.image.url }}" target="_blank">View Image</a></p>
+                {% endif %}
+                {{ form.image }}
+            </div>
+            <button type="submit" class="btn btn-success btn-update">Update</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

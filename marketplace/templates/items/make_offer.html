@@ -1,0 +1,6 @@
+<form method="post">
+    {% csrf_token %}
+    <label for="price">Enter your offer price:</label>
+    <input type="number" name="price" required>
+    <button type="submit">Submit Offer</button>
+</form>

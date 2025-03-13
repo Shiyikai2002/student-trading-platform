@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>My Purchase History</h2>
+
+    {% if transactions %}
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Price</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <td><a href="{% url 'item_detail' transaction.item.id %}">{{ transaction.item.name }}</a></td>
+                    <td>${{ transaction.total_price }}</td>
+                    <td>{{ transaction.date_initiated|date:"Y-m-d H:i" }}</td>
+                    <td>{{ transaction.status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You have not purchased any items yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

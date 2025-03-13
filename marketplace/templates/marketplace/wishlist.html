@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+<h2>My Wishlist</h2>
+{% for wishlist_item in wishlist_items %}
+    <p>{{ wishlist_item.item.name }}</p>
+    <a href="{% url 'remove_from_wishlist' wishlist_item.id %}" class="btn btn-danger">Remove</a>
+{% endfor %}

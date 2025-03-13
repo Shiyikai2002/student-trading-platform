@@ -1,0 +1,43 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ user.username }}'s Profile</h2>
+
+    <!-- 头像 -->
+    {% if user.profile_image %}
+        <img src="{{ user.profile.profile_image.url }}" alt="Profile Picture" width="150">
+    {% else %}
+        <img src="/static/default-user.png" alt="Default Profile Picture" width="150">
+    {% endif %}
+
+    <p>Email: {{ user.email }}</p>
+    <p>Joined: {{ user.date_joined }}</p>
+    <!-- 显示用户地址 -->
+    <p><strong>My Address:</strong> {{ user.address }}</p>
+    <!-- 显示账户余额 -->
+    <p><strong>Account Balance:</strong> £{{ user.balance }}</p>
+
+    <!-- 充值表单 -->
+    <form method="POST" action="{% url 'deposit' %}">
+        {% csrf_token %}
+        <label for="amount">Deposit Amount:</label>
+        <input type="number" name="amount" id="amount" step="0.01" min="0.01" required>
+        <button type="submit" class="btn btn-success">Deposit</button>
+    </form>
+
+
+
+    <!-- 地址更新表单 -->
+    <form method="POST" action="{% url 'update_address' %}">
+        {% csrf_token %}
+        <label for="address">Update Address:</label>
+        <input type="text" name="address" id="address" value="{{ user.address }}" class="form-control" required>
+        <button type="submit" class="btn btn-primary mt-2">Update Address</button>
+    </form>
+
+    <a href="{% url 'profile_edit' %}" class="btn btn-secondary mt-3">Edit Profile</a>
+</div>
+{% endblock %}
+

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Message Center</h2>
+
+    
+    {% if messages %}
+        <div class="chat-box p-3 border rounded" id="chat-box"
+             style="max-height: 400px; overflow-y: auto; background: #f8f9fa;">
+            <div id="message-list">
+                {% for message in messages %}
+                    <div class="d-flex {% if message.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %}">
+                        <div class="message-box p-2 m-2 rounded" style="max-width: 60%;">
+                            <strong>{{ message.sender.username }}</strong>: {{ message.content }}
+                            <br>
+                            <small class="text-muted">{{ message.timestamp }}</small>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <p>No messages yet.</p>
+    {% endif %}
+
+    <!-- Reply Form -->
+    <form id="message-form" method="post" action="{% url 'send_message' receiver.id %}" class="mt-3">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="content" class="form-label">Reply Message:</label>
+            <textarea name="content" id="content" class="form-control" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Send Reply</button>
+    </form>
+</div>
+
+<!-- **JS 自动滚动到底部 ** -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function scrollToBottom() {
+        var chatBox = document.getElementById("chat-box");
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        scrollToBottom();
+    });
+
+    // AJAX 轮询，每 5 秒获取新消息
+    setInterval(function () {
+        $.get(window.location.href, function (data) {
+            $("#message-list").html($(data).find("#message-list").html());
+            scrollToBottom();  // 滚动到底部
+        });
+    }, 5000);
+
+    // 发送消息时刷新列表
+    $("#message-form").on("submit", function (event) {
+        event.preventDefault();
+        var formData = $(this).serialize();
+
+        $.post($(this).attr("action"), formData, function () {
+            $.get(window.location.href, function (data) {
+                $("#message-list").html($(data).find("#message-list").html());
+                $("#content").val("");  // 清空输入框
+                scrollToBottom();
+            });
+        });
+    });
+</script>
+
+{% endblock %}

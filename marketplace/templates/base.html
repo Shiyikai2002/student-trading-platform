@@ -1,0 +1,189 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Trading Platform</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        .navbar { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        .profile-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 10px; }
+        .nav-item a { font-weight: 500; }
+
+        /* 提示框悬浮在右上角 */
+        .alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            max-width: 300px;
+        }
+
+        /* 提示框动画 */
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        .alert.fade-out {
+            animation: fadeOut 1s ease-out forwards;
+        }
+
+        /* 让导航栏按钮的间距更均匀 */
+        .navbar-nav .nav-item {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        /* 确保按钮内部的文字和图标对齐 */
+        .navbar-nav .nav-link {
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        /* 购物车按钮的徽章位置调整 */
+        .navbar-nav .position-relative .badge {
+            font-size: 12px;
+            padding: 5px 8px;
+            top: 8px;
+            right: 8px;
+        }
+
+        /* 购物车、消息、出售按钮微调 */
+        .navbar-nav .btn {
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* 鼠标悬停时让按钮更明显 */
+        .navbar-nav .btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* 滚动字幕条样式 */
+        .scrolling-caption {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            padding: 10px;
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<script>
+    // 自动隐藏消息框（3秒后消失）
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            let alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                alert.classList.add("fade-out");
+                setTimeout(() => alert.remove(), 1000);
+            });
+        }, 3000);
+    });
+</script>
+
+<body>
+
+    <div class="alert-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}
+                            alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- 滚动字幕条 -->
+    <div class="scrolling-caption">
+        <marquee behavior="scroll" direction="left">
+            🚀 Welcome to Student Trading! | 🎉 Get the best deals from students! | 📢 Post your items now and start trading!
+        </marquee>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">🎓💯 Student Trading system</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-primary mx-2" href="{% url 'add_item' %}">👚 Sell Item</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-info mx-2" href="{% url 'message_center' %}">
+                                📝 Messages
+                                {% if unread_messages_count > 0 %}
+                                    <span class="badge bg-danger">{{ unread_messages_count }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-outline-info mx-2 position-relative" href="{% url 'cart' %}">
+                                🛒 Cart
+                                {% if cart_count > 0 %}
+                                    <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                                        {{ cart_count }}
+                                    </span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        
+                        
+                        <li><a class="nav-link btn btn-outline-info mx-2" href="{% url 'purchase_history' %}">💴 View Purchase History</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
+                                {% if user.profile.profile_image %}
+                                    <img src="{{ user.profile.profile_image.url }}" class="profile-img">
+                                {% else %}
+                                    <img src="/static/default-user.png" class="profile-img">
+                                {% endif %}
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'profile_view' %}">View Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'profile_edit' %}">Edit Profile</a></li>
+
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="post" action="{% url 'logout' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item text-danger">Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link btn btn-outline-secondary mx-2" href="{% url 'register' %}">Register</a></li>
+                        <li class="nav-item"><a class="nav-link btn btn-outline-primary mx-2" href="{% url 'login' %}">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

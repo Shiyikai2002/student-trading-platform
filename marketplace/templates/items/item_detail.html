@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        background: url("https://www.instamojo.com/blog/wp-content/uploads/2022/03/ecommerce.jpg") no-repeat center center fixed;
+        background-size: cover;
+    }
+
+    .item-detail-container {
+        max-width: 900px;
+        margin: 50px auto;
+        background: rgba(255, 255, 255, 0.85);
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .item-title {
+        font-size: 28px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #222;
+    }
+
+    .item-image {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        transition: transform 0.2s;
+    }
+
+    .item-image:hover {
+        transform: scale(1.02);
+    }
+
+    .additional-images img {
+        width: 80px;
+        height: auto;
+        margin: 5px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .additional-images img:hover {
+        transform: scale(1.1);
+    }
+
+    .item-info {
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    .item-description {
+        font-size: 16px;
+        color: #444;
+        background: rgba(240, 240, 240, 0.9);
+        padding: 12px;
+        border-radius: 8px;
+        line-height: 1.6;
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .review-container {
+        margin-top: 30px;
+    }
+
+    .review-card {
+        border: 1px solid #ddd;
+        padding: 12px;
+        border-radius: 8px;
+        background: rgba(245, 245, 245, 0.9);
+        margin-bottom: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .review-card strong {
+        font-size: 14px;
+    }
+
+    .review-card p {
+        margin: 5px 0;
+    }
+
+    .review-form {
+        background: rgba(255, 255, 255, 0.9);
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-review {
+        width: 100%;
+        font-size: 16px;
+        padding: 10px;
+    }
+
+/* 让按钮整体居中 */
+.action-buttons {
+    display: flex;
+    justify-content: center; /* 居中 */
+    margin-top: 20px; /* 让按钮下移 */
+}
+
+/* 让按钮变大 */
+.action-buttons .btn {
+    padding: 12px 24px;
+    font-size: 18px; /* 让文字变大 */
+    border-radius: 8px; /* 让按钮更加圆润 */
+    transition: all 0.3s ease-in-out;
+}
+
+/* 鼠标悬停时增加缩放效果 */
+.action-buttons .btn:hover {
+    transform: scale(1.05);
+}
+
+
+</style>
+
+<div class="container item-detail-container">
+    <h1 class="item-title">{{ item.name }}</h1>
+
+    <div class="row">
+        <!-- Image Section -->
+        <div class="col-md-6 text-center">
+            {% if item.image and item.image.url %}
+                <img src="{{ item.image.url }}" class="img-fluid item-image" alt="{{ item.name }}">
+            {% else %}
+                <img src="/static/default-placeholder.png" alt="No image available" class="item-image">
+                <p class="text-muted">No image available for this item.</p>
+            {% endif %}
+
+            <!-- Additional Images -->
+            <div class="mt-3 additional-images">
+                {% for image in item.images.all %}
+                    <img src="{{ image.image.url }}" alt="Additional Image">
+                {% empty %}
+                    <p>No additional images available.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Details Section -->
+        <div class="col-md-6">
+            <p class="item-info"><strong>Price:</strong> ${{ item.price }}</p>
+            <p class="item-info"><strong>Category:</strong> {{ item.category }}</p>
+            <p class="item-description"><strong>Description:</strong> {{ item.description }}</p>
+
+            <!-- Debugging Info -->
+            <p class="text-muted">Seller: {{ item.seller }}</p>
+            <p class="text-muted">Current User: {{ request.user }}</p>
+<!-- 发送消息表单 -->
+{% if user.is_authenticated and request.user != item.seller %}
+<div class="mt-4">
+    <h5>Send a Message to the Seller</h5>
+    <form method="post" action="{% url 'send_message' item.seller.id %}">
+        {% csrf_token %}
+        <textarea name="content" class="form-control mt-2" placeholder="Type your message..."></textarea>
+        <button type="submit" class="btn btn-primary mt-2">Send Message</button>
+    </form>
+</div>
+{% endif %}
+            <!-- Action Buttons -->
+            {% if request.user == item.seller %}
+                <div class="action-buttons">
+                    <a href="{% url 'edit_item' item.id %}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a href="{% url 'delete_item' item.id %}" class="btn btn-danger">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </a>
+                </div>
+                
+            {% endif %}
+            <!-- Action Buttons -->
+{% if request.user != item.seller %}
+<div class="d-flex justify-content-center mt-4"> <!-- 居中，并向下移动 -->
+    <a href="{% url 'add_to_cart' item.id %}" class="btn btn-success btn-lg mx-3">
+        <i class="fas fa-cart-plus"></i> Add to cart
+    </a>
+    <a href="{% url 'confirm_purchase' item.id %}" class="btn btn-primary btn-lg mx-3">
+        <i class="fas fa-shopping-cart"></i> Buy now
+    </a>
+</div>
+{% endif %}
+
+
+        </div>
+    </div>
+
+    <!-- Review Section -->
+    <div class="review-container">
+        <h3>Reviews</h3>
+        {% if reviews %}
+            {% for review in reviews %}
+                <div class="review-card">
+                    <strong>{{ review.reviewer.username }}</strong>
+                    <p>{{ review.comment }} (Rating: {{ review.rating }}/5)</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No reviews yet.</p>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+            <div class="review-form">
+                <form method="post" action="{% url 'leave_review' item.id %}">
+                    {% csrf_token %}
+                    <label for="rating"><strong>Rating (1-5):</strong></label>
+                    <select name="rating" id="rating" class="form-select">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                    <textarea name="comment" class="form-control mt-2" placeholder="Leave a review..."></textarea>
+                    <button type="submit" class="btn btn-primary mt-2 btn-review">Submit Review</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

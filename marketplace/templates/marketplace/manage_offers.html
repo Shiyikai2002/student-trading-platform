@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Manage Offers for {{ item.name }}</h2>
+    <ul class="list-group">
+        {% for offer in offers %}
+            <li class="list-group-item">
+                Offer: ${{ offer.price }} by {{ offer.buyer.username }}
+                <a href="{% url 'accept_offer' offer.id %}" class="btn btn-success">Accept</a>
+                <a href="{% url 'reject_offer' offer.id %}" class="btn btn-danger">Reject</a>
+            </li>
+        {% empty %}
+            <p>No offers yet.</p>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

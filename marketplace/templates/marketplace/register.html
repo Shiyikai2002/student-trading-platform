@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        background: url("https://cfmnsugzia.cloudimg.io/www.gla.ac.uk/media/Media_1141038_smxx.webp?width=1400&force_format=webp") no-repeat center center fixed;
+        background-size: cover;
+    }
+    .form-container {
+        background: rgba(255, 255, 255, 0.8);
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        max-width: 450px;
+        margin: 50px auto;
+    }
+    .form-control {
+        border-radius: 8px;
+    }
+    .register-btn {
+        background: #0057b8;
+        color: white;
+        font-weight: bold;
+        transition: 0.3s ease-in-out;
+    }
+    .register-btn:hover {
+        background: #003b7a;
+    }
+    .password-rules {
+        font-size: 0.9rem;
+        color: #555;
+    }
+</style>
+
+<div class="container">
+    <div class="form-container">
+        <h2 class="text-center">Register</h2>
+        <p class="text-center">Create your account with a university email.</p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="id_username" class="form-label">Username:</label>
+                <input type="text" name="username" class="form-control" id="id_username" placeholder="Enter your username">
+            </div>
+
+            <div class="mb-3">
+                <label for="id_email" class="form-label">Email:</label>
+                <input type="email" name="email" class="form-control" id="id_email" placeholder="e.g. 2222222A@student.gla.ac.uk" required pattern="^\d{7}[A-Z]@student\.gla\.ac\.uk$">
+                <small class="text-muted">Use your university email.</small>
+            </div>
+
+            <div class="mb-3">
+                <label for="id_password1" class="form-label">Password:</label>
+                <input type="password" name="password1" class="form-control" id="id_password1" required>
+                <small class="password-rules">
+                    - At least 8 characters<br>
+                    - Cannot be too common<br>
+                    - Cannot be only numbers
+                </small>
+            </div>
+
+            <div class="mb-3">
+                <label for="id_password2" class="form-label">Confirm Password:</label>
+                <input type="password" name="password2" class="form-control" id="id_password2" required>
+                <small class="text-muted">Enter the same password again.</small>
+            </div>
+
+            <button type="submit" class="btn register-btn w-100">Register</button>
+        </form>
+
+        <p class="text-center mt-3">
+            Already have an account? <a href="{% url 'login' %}">Login</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        background: url("https://cfmnsugzia.cloudimg.io/www.gla.ac.uk/media/Media_1141038_smxx.webp?width=1400&force_format=webp") no-repeat center center fixed;
+        background-size: cover;
+    }
+    .form-container {
+        background: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        max-width: 400px;
+        margin: 100px auto;
+    }
+    .btn-custom {
+        background-color: #007bff;
+        color: white;
+    }
+    .btn-custom:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="container">
+    <div class="form-container">
+        <h2 class="text-center">Login</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            <div class="mb-3">
+                {{ form.password.label_tag }}
+                {{ form.password }}
+            </div>
+            <button type="submit" class="btn btn-custom w-100">Login</button>
+        </form>
+        <div class="text-center mt-3">
+            <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

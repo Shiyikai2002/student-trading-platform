@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Confirm Purchase</h2>
+
+    <div class="card shadow-sm p-4">
+        <p><strong>Item:</strong> {{ item.name }}</p>
+        <p><strong>Price:</strong> ${{ item.price }}</p>
+
+        <form method="POST" action="{% url 'process_purchase' item.id %}">
+            {% csrf_token %}
+
+            <!-- 购买方式选择 -->
+            <div class="mb-3">
+                <label for="payment_method" class="form-label"><strong>Payment Method:</strong></label>
+                <select name="payment_method" id="payment_method" class="form-select" required>
+                    <option value="bank_card">💳 Bank Card</option>
+                    <option value="wechat">💚 WeChat</option>
+                    <option value="alipay">💙 Alipay</option>
+                    <option value="paypal">💰 PayPal</option>
+                </select>
+            </div>
+
+            <!-- 地址输入框 -->
+            <div class="mb-3">
+                <label for="address" class="form-label"><strong>Shipping Address:</strong></label>
+                <input type="text" name="address" id="address" class="form-control" value="{{ user.address }}" required>
+            </div>
+
+            <!-- 按钮 -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary px-4">✅ Confirm Purchase</button>
+                <a href="{% url 'item_detail' item.id %}" class="btn btn-secondary px-4">❌ Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

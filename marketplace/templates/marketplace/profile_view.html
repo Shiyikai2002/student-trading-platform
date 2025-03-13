@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ user.username }}'s Profile</h2>
+    <img src="{{ user.profile_image.url }}" alt="Profile Picture" class="img-thumbnail" width="150">
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Bio:</strong> {{ user.bio }}</p>
+    <a href="{% url 'profile_edit' %}" class="btn btn-primary">Edit Profile</a>
+</div>
+{% endblock %}
